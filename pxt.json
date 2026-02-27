@@ -8,11 +8,10 @@
     },
     "files": [
         "main.ts",
-        "README.md"
+        "README.md",
+        "EseUtils.ts"
     ],
-    "testFiles": [
-        "test.ts"
-    ],
+    "testFiles": [],
     "targetVersions": {
         "target": "8.0.18",
         "targetId": "microbit"
