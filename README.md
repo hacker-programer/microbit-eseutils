@@ -1,24 +1,66 @@
+# 🛠️ EseUtils - Eventos Pro para micro:bit
 
-> Open this page at [https://hacker-programer.github.io/microbit-eseutils/](https://hacker-programer.github.io/microbit-eseutils/)
+Esta extensión añade superpoderes a tus botones. Permite detectar **clics simples** y **dobles clics** sin que la micro:bit se confunda.
 
-## Use as Extension
+---
 
-This repository can be added as an **extension** in MakeCode.
+## 🧒 Sección para Humanos (Bloques)
+*Ideal para niños, principiantes y gente que no quiere quemarse la cabeza.*
 
-* open [https://makecode.microbit.org/](https://makecode.microbit.org/)
-* click on **New Project**
-* click on **Extensions** under the gearwheel menu
-* search for **https://github.com/hacker-programer/microbit-eseutils** and import
+### ⚠️ REGLA DE ORO
+Si usas esta extensión, **NO uses los bloques rojos normales de "al presionar el botón A"**. 
+Si los mezclas, tu programa hará cosas raras (como activar el clic simple cuando querías hacer doble clic). Usa **solo** los bloques de color morado de **EseUtils**.
 
-## Edit this project
+### 📦 Cómo instalarlo
+1. Entra a [MakeCode](https://makecode.microbit.org/).
+2. Dale a **Extensiones** (en el engranaje ⚙️).
+3. Pega este link: `https://github.com/hacker-programer/microbit-eseutils`
 
-To edit this repository in MakeCode.
+### 🎮 Cómo usar los bloques
+- **on click A / B**: Úsalo para lo que quieras que pase cuando tocas el botón una vez.
+- **on double click A / B**: Úsalo para lo que pase cuando tocas el botón dos veces muy rápido.
 
-* open [https://makecode.microbit.org/](https://makecode.microbit.org/)
-* click on **Import** then click on **Import URL**
-* paste **https://github.com/hacker-programer/microbit-eseutils** and click import
+---
 
-#### Metadata (used for search, rendering)
+## 💻 Sección para Programadores (JavaScript / TypeScript)
+*Especificaciones técnicas para los que no arrastran bloques.*
 
-* for PXT/microbit
-<script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
+EseUtils implementa un sistema de **Debouncing y State Machine** basado en hilos paralelos (`fibers`) para separar la lógica de entrada.
+
+### Lógica de Eventos
+La extensión utiliza el sistema de mensajería de CODAL/DAL para no bloquear el bucle principal. Al detectar un flanco de subida en los botones (ID 1 o 2, valor 3), se dispara un proceso de confirmación:
+
+1. **Primer Clic:** Registra el `timestamp` actual y lanza un hilo paralelo (`control.runInParallel`).
+2. **Espera:** El hilo espera 500ms (`ClickDifference`).
+3. **Confirmación:**
+   - Si se detecta un segundo clic antes de los 500ms, se dispara un evento de **Doble Clic** y se cancela la marca del simple.
+   - Si pasan los 500ms sin un segundo impacto, se dispara el evento de **Clic Simple**.
+
+
+
+### Especificaciones de IDs y Valores
+Si prefieres usar `control.onEvent` directamente, estos son los registros:
+
+| Evento | ID | Valor A | Valor B |
+| :--- | :--- | :--- | :--- |
+| **Doble Clic** | `4000` | `1` | `2` |
+| **Clic Simple** | `4001` | `1` | `2` |
+
+---
+
+## 📝 Ejemplos de uso
+
+### En Bloques
+*(Arrastra los bloques de EseUtils en lugar de los de Input)*
+
+### En TypeScript
+```typescript
+// Doble clic para lanzar un misil
+EseUtils.onDoubleClickA(() => {
+    basic.showIcon(IconNames.Target)
+})
+
+// Clic simple para saludar
+EseUtils.onClickA(() => {
+    basic.showString("Hola")
+})
